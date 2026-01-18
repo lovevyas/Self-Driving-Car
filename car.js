@@ -1,5 +1,5 @@
 class Car{
-    constructor(x,y,width,height){
+    constructor(x,y,width,height,controlType, maxSpeed=5){
         this.x=x;
         this.y=y;
         this.width=width;
@@ -7,111 +7,87 @@ class Car{
 
         this.speed=0;
         this.accel=0.2;
-        this.maxSpeed=5;
+        this.maxSpeed=maxSpeed;
         this.friction=0.05;
         this.angle=0;
 
         this.damaged = false;
-        this.sensor=new Sensor(this);
-        this.controls=new Controls();
+        this.useBrain=controlType=="AI";
+
+        if(controlType!="DUMMY"){
+            this.sensor=new Sensor(this);
+            this.brain=new NeuralNetwork([this.sensor.rayCount,6,4])
+        }
+        this.controls=new Controls(controlType);
         this.polygon = this.#createPolygon();
     }
 
-    update(roadBorders){
+    update(roadBorders,traffic){
+        if(!this.damaged){
         this.#move();
         this.polygon = this.#createPolygon();
-        this.damaged = this.#accessDamage(roadBorders);
-        this.sensor.update(roadBorders);
+        this.damaged = this.#accessDamage(roadBorders, traffic);
+        }
+        if(this.sensor){
+            this.sensor.update(roadBorders, traffic);
+            const offsets = this.sensor.readings.map(
+                s=>s==null?0:1-s.offsets
+            );
+            const outputs = NeuralNetwork.feedForward(offsets,this.brain);
+            console.log(outputs);
+            if(this.useBrain){
+                this.controls.forward=outputs[0];
+                this.controls.left=outputs[1];
+                this.controls.right=outputs[2];
+                this.controls.reverse=outputs[3];
+
+            }
+        }
+        
     }
 
-    #accessDamage(roadBorders){
+    #accessDamage(roadBorders,traffic){
         for (let i = 0; i<roadBorders.length; i++) {
             if(polysIntersect(this.polygon,roadBorders[i])){
                 return true;
             }
         }
+        for (let i = 0; i<traffic.length; i++) {
+            if(polysIntersect(this.polygon,traffic[i].polygon)){
+                return true;
+            }
+        }
         return false;
     }
-    // basic rectangle car
-    // #createPolygon(){
-    //     const points=[];
-    //     const rad = Math.hypot(this.width,this.height)/2;
-    //     const alpha = Math.atan2(this.width,this.height);
-    //     //top right and left
-    //     points.push({
-    //         x:this.x-Math.sin(this.angle-alpha)*rad,
-    //         y:this.y-Math.cos(this.angle-alpha)*rad
-    //     });
-    //     points.push({
-    //         x:this.x-Math.sin(this.angle+alpha)*rad,
-    //         y:this.y-Math.cos(this.angle+alpha)*rad
-    //     });
-    //     //bottom right left
-    //     points.push({
-    //         x:this.x-Math.sin(Math.PI+this.angle-alpha)*rad,
-    //         y:this.y-Math.cos(Math.PI+this.angle-alpha)*rad
-    //     });
-    //     points.push({
-    //         x:this.x-Math.sin(Math.PI+this.angle+alpha)*rad,
-    //         y:this.y-Math.cos(Math.PI+this.angle+alpha)*rad
-    //     });
-
-    //     return points;
-    // }
-
-    //sports car
+    
     #createPolygon(){
         const points=[];
-        // rad is the distance from center to corners
         const rad = Math.hypot(this.width,this.height)/2;
-        // alpha is the angle to the corners
         const alpha = Math.atan2(this.width,this.height);
-
-        // We use 8 points now to get a better sports car shape
-        // Adjust these multipliers (e.g., 0.6, 0.9, 0.4) to change the shape
-        
-        // Front Nose Points (narrower)
+        //top right and left
         points.push({
-            x:this.x-Math.sin(this.angle)*rad*1.1, // Front tip
-            y:this.y-Math.cos(this.angle)*rad*1.1
+            x:this.x-Math.sin(this.angle-alpha)*rad,
+            y:this.y-Math.cos(this.angle-alpha)*rad
         });
         points.push({
-            x:this.x-Math.sin(this.angle - alpha * 0.4)*rad,
-            y:this.y-Math.cos(this.angle - alpha * 0.4)*rad
+            x:this.x-Math.sin(this.angle+alpha)*rad,
+            y:this.y-Math.cos(this.angle+alpha)*rad
         });
-        
-        // Mid Points (wide shoulders/doors)
+        //bottom right left
         points.push({
-            x:this.x-Math.sin(this.angle - alpha * 0.9)*rad*0.8,
-            y:this.y-Math.cos(this.angle - alpha * 0.9)*rad*0.8
-        });
-        points.push({
-            x:this.x-Math.sin(Math.PI + this.angle - alpha * 0.9)*rad*0.9,
-            y:this.y-Math.cos(Math.PI + this.angle - alpha * 0.9)*rad*0.9
-        });
-
-        // Rear Points (wider rear end)
-        points.push({
-            x:this.x-Math.sin(Math.PI + this.angle - alpha * 0.6)*rad*1.1,
-            y:this.y-Math.cos(Math.PI + this.angle - alpha * 0.6)*rad*1.1
+            x:this.x-Math.sin(Math.PI+this.angle-alpha)*rad,
+            y:this.y-Math.cos(Math.PI+this.angle-alpha)*rad
         });
         points.push({
-            x:this.x-Math.sin(Math.PI + this.angle + alpha * 0.6)*rad*1.1,
-            y:this.y-Math.cos(Math.PI + this.angle + alpha * 0.6)*rad*1.1
-        });
-
-        // Mid Points (wide shoulders/doors left side)
-        points.push({
-            x:this.x-Math.sin(Math.PI + this.angle + alpha * 0.9)*rad*0.9,
-            y:this.y-Math.cos(Math.PI + this.angle + alpha * 0.9)*rad*0.9
-        });
-        points.push({
-            x:this.x-Math.sin(this.angle + alpha * 0.9)*rad*0.8,
-            y:this.y-Math.cos(this.angle + alpha * 0.9)*rad*0.8
+            x:this.x-Math.sin(Math.PI+this.angle+alpha)*rad,
+            y:this.y-Math.cos(Math.PI+this.angle+alpha)*rad
         });
 
         return points;
     }
+
+    
+    
 
 
     #move(){
@@ -154,13 +130,13 @@ class Car{
         
     }
 
-    draw(ctx){
+    draw(ctx, color){
         if (!this.polygon) return;
 
         if(this.damaged){
             ctx.fillStyle="#7f8c8d";
         }else{
-            ctx.fillStyle="#2c3e50";
+            ctx.fillStyle=color;
         }
 
         ctx.beginPath();
@@ -187,6 +163,9 @@ class Car{
         ctx.strokeStyle = "white";
         ctx.lineWidth = 2;
         ctx.stroke();
-        this.sensor.draw(ctx);
+        if(this.sensor){
+            this.sensor.draw(ctx);
+        }
+        
     }
 }
