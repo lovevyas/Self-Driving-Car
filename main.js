@@ -29,15 +29,45 @@ if(localStorage.getItem("bestBrain")){
     }
 }
 
-const traffic=[
-    new Car(road.getLaneCenter(1),-100,30,50,"DUMMY",2,getRandomColor()),
-    new Car(road.getLaneCenter(0),-300,30,50,"DUMMY",2,getRandomColor()),
-    new Car(road.getLaneCenter(2),-300,30,50,"DUMMY",2,getRandomColor()),
-    new Car(road.getLaneCenter(0),-500,30,50,"DUMMY",2,getRandomColor()),
-    new Car(road.getLaneCenter(1),-500,30,50,"DUMMY",2,getRandomColor()),
-    new Car(road.getLaneCenter(1),-700,30,50,"DUMMY",2,getRandomColor()),
-    new Car(road.getLaneCenter(2),-700,30,50,"DUMMY",2,getRandomColor()),
+// const traffic=[
+//     new Car(road.getLaneCenter(1),-100,30,50,"DUMMY",2,getRandomColor()),
+//     new Car(road.getLaneCenter(0),-300,30,50,"DUMMY",2,getRandomColor()),
+//     new Car(road.getLaneCenter(2),-300,30,50,"DUMMY",2,getRandomColor()),
+//     new Car(road.getLaneCenter(0),-500,30,50,"DUMMY",2,getRandomColor()),
+//     new Car(road.getLaneCenter(1),-500,30,50,"DUMMY",2,getRandomColor()),
+//     new Car(road.getLaneCenter(1),-700,30,50,"DUMMY",2,getRandomColor()),
+//     new Car(road.getLaneCenter(2),-700,30,50,"DUMMY",2,getRandomColor()),
+// ];
+
+const trafficBlueprint = [
+    { lane: 1, y: -100 },
+    { lane: 0, y: -300 },
+    { lane: 2, y: -300 },
+    { lane: 0, y: -500 },
+    { lane: 1, y: -500 },
+    { lane: 1, y: -700 },
+    { lane: 2, y: -700 },
 ];
+
+let traffic = [];
+spawnTrafficAt(-100); 
+
+animate();
+function spawnTrafficAt(yPosition) {
+    // This function adds a new batch of cars starting at yPosition
+    for(let i=0; i<trafficBlueprint.length; i++){
+        const t = trafficBlueprint[i];
+        traffic.push(new Car(
+            road.getLaneCenter(t.lane),
+            yPosition + t.y + 100, // Adjust so the batch starts exactly at yPosition
+            30,
+            50,
+            "DUMMY",
+            2,
+            getRandomColor()
+        ));
+    }
+}
 
 animate();
 
@@ -53,7 +83,7 @@ function discard(){
 function generateCars(N){
     const cars=[];
     for(let i=1;i<=N;i++){
-        cars.push(new Car(road.getLaneCenter(1),100,30,50,"AI"));
+        cars.push(new Car(road.getLaneCenter(1),100,30,50,"AI",3));
     }
     return cars;
 }
@@ -69,17 +99,25 @@ function animate(time){
         c=>c.y==Math.min(
             ...cars.map(c=>c.y)
         ));
+    
+    const mostDistantTraffic = Math.min(...traffic.map(t => t.y));
 
+    if (bestCar.y < mostDistantTraffic + 900) {        
+        spawnTrafficAt(mostDistantTraffic - 300);
+    }
+
+    traffic = traffic.filter(c => c.y < bestCar.y + 1000);
     carCanvas.height=window.innerHeight;
     networkCanvas.height=window.innerHeight;
 
     carCtx.save();
     carCtx.translate(0,-bestCar.y+carCanvas.height*0.7);
 
-    road.draw(carCtx);
+    road.draw(carCtx);    
     for(let i=0;i<traffic.length;i++){
         traffic[i].draw(carCtx);
     }
+    
     carCtx.globalAlpha=0.2;
     for(let i=0;i<cars.length;i++){
         cars[i].draw(carCtx);
