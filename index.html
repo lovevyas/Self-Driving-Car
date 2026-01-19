@@ -1,16 +1,66 @@
 <!DOCTYPE html>
+<html lang="en">
 <head>
-    <title>Self-driving car - No libaries</title>
+    <meta charset="UTF-8">
+    <title>Self-driving car - Neural Network</title>
     <link rel="stylesheet" href="style.css">
 </head>
 <body>
     <canvas id="carCanvas"></canvas>
-    <div id="verticalButtons">
-        <button onclick="save()">💾</button>
-        <button onclick="discard()">🗑️</button>
-    </div>
     
+    <div id="introScreen">
+        <div class="intro-card">
+            <h1>Self Driving Car</h1>
+            <p class="subtitle">Neural Network Simulation</p>
+            
+            <div class="divider"></div>
+            <h3>Select Mode</h3>
+
+            <div class="button-row">
+                <button onclick="startGame('KEYS')" class="mode-btn manual">
+                    <span class="icon">🕹️</span>
+                    <span class="text">Manual Drive</span>
+                </button>
+
+                <button onclick="startGame('AUTO')" class="mode-btn auto">
+                    <span class="icon">🤖</span>
+                    <span class="text">Auto Pilot</span>
+                </button>
+
+                <button onclick="startGame('AI_TRAINER')" class="mode-btn trainer">
+                    <span class="icon">🧬</span>
+                    <span class="text">AI Trainer</span>
+                </button>
+            </div>
+        </div>
+    </div>
+
+    <div id="sideBar">
+        <div class="sidebar-header">
+            <h3>Control Panel</h3>
+        </div>
+        
+        <div class="side-group">
+            <button onclick="switchMode('KEYS')">🕹️ Manual</button>
+            <button onclick="switchMode('AUTO')">🤖 Auto</button>
+            <button onclick="switchMode('AI_TRAINER')">🧬 Trainer</button>
+        </div>
+
+        <div class="side-label">Memory</div>
+        <div class="side-group">
+            <button onclick="save()">💾 Save Brain</button>
+            <button onclick="discard()">🗑️ Discard</button>
+        </div>
+
+        <div class="side-label">System</div>
+        <div class="side-group">
+            <button onclick="restartGame()">🔄 Restart</button>
+            <button onclick="exitGame()" class="exit-btn">❌ Exit</button>
+        </div>
+    </div>
+
     <canvas id="networkCanvas"></canvas>
+    
     <script src="bestBrain.js"></script>
     <script src="visualizer.js"></script>
     <script src="network.js"></script>
@@ -19,7 +69,8 @@
     <script src="road.js"></script>
     <script src="controls.js"></script>
     <script src="car.js"></script>
-    <script src="main.js"></script>
     
+    <script src="intro.js"></script> 
+    <script src="main.js"></script>
 </body>
 </html>

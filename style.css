@@ -1,31 +1,206 @@
-body{
-    margin:0;
-    background:darkgray;
-    overflow:hidden;
-    display:flex;
-    justify-content:center;
-    align-items:center;
+/* --- GLOBAL RESET --- */
+body {
+    margin: 0;
+    background: #111; /* Dark background behind canvases */
+    overflow: hidden;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
 }
 
-#verticalButtons{
-    display:flex;
-    flex-direction:column;
+/* --- CANVAS STYLES --- */
+#carCanvas {
+    background: #f0f0f0; /* Light gray road */
+    box-shadow: 0 0 20px rgba(0,0,0,0.5);
 }
 
-button{
-    border: none;
-    border-radius: 5px;
-    padding: 5px 5px 7px 5px;
-    margin: 2px;
-    cursor:pointer;
-}
-button:hover{
-    background:blue;
+#networkCanvas {
+    background: #0d0d0d; /* Deep black for network */
+    border-left: 2px solid #333;
 }
 
-#networkCanvas{
-    background:black;
+/* --- INTRO SCREEN (Matches id="introScreen") --- */
+#introScreen {
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    /* Gradient overlay */
+    background: radial-gradient(circle, rgba(0,0,0,0.4) 0%, rgba(0,0,0,0.9) 100%);
+    
+    /* Important: We use Flexbox to center the card */
+    display: flex; 
+    justify-content: center;
+    align-items: center;
+    
+    z-index: 100;
+    transition: opacity 0.5s ease;
 }
-#carCanvas{
-    background:lightgray;
+
+.intro-card {
+    background: rgba(20, 20, 20, 0.6); 
+    backdrop-filter: blur(15px);        /* Glass Effect */
+    -webkit-backdrop-filter: blur(15px);
+    border: 1px solid rgba(255, 255, 255, 0.1);
+    border-radius: 20px;
+    padding: 50px;
+    text-align: center;
+    box-shadow: 0 20px 50px rgba(0,0,0,0.5);
+    max-width: 600px;
+    width: 90%;
+}
+
+.intro-card h1 {
+    color: white;
+    font-size: 3rem;
+    margin: 0;
+    text-transform: uppercase;
+    letter-spacing: 2px;
+    text-shadow: 0 0 10px rgba(0, 198, 255, 0.7);
+}
+
+.subtitle {
+    color: #aaa;
+    margin-top: 10px;
+    font-size: 1.1rem;
+}
+
+.divider {
+    height: 1px;
+    background: linear-gradient(90deg, transparent, rgba(255,255,255,0.2), transparent);
+    margin: 30px 0;
+}
+
+.intro-card h3 {
+    color: #fff;
+    margin-bottom: 25px;
+    font-weight: 400;
+    text-transform: uppercase;
+    font-size: 0.9rem;
+    letter-spacing: 1px;
+}
+
+/* --- INTRO BUTTONS --- */
+.button-row {
+    display: flex;
+    justify-content: center;
+    gap: 20px;
+    flex-wrap: wrap;
+}
+
+.mode-btn {
+    background: rgba(255, 255, 255, 0.05);
+    border: 1px solid rgba(255, 255, 255, 0.1);
+    color: white;
+    padding: 15px 25px;
+    border-radius: 12px;
+    cursor: pointer;
+    transition: all 0.3s ease;
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    min-width: 140px;
+}
+
+.mode-btn .icon {
+    font-size: 1.5rem;
+}
+
+.mode-btn .text {
+    font-size: 1rem;
+    font-weight: bold;
+}
+
+.mode-btn:hover {
+    transform: translateY(-5px);
+    border-color: rgba(255,255,255,0.5);
+}
+
+.mode-btn.manual:hover {
+    background: linear-gradient(45deg, #2980b9, #3498db);
+    box-shadow: 0 0 20px rgba(52, 152, 219, 0.6);
+}
+
+.mode-btn.auto:hover {
+    background: linear-gradient(45deg, #8e44ad, #9b59b6);
+    box-shadow: 0 0 20px rgba(155, 89, 182, 0.6);
+}
+
+.mode-btn.trainer:hover {
+    background: linear-gradient(45deg, #d35400, #e67e22);
+    box-shadow: 0 0 20px rgba(230, 126, 34, 0.6);
+}
+
+/* --- SIDEBAR (Matches id="sideBar") --- */
+#sideBar {
+    display: none; /* Hidden by default, JS turns it to 'block' */
+    position: fixed;
+    left: 20px; 
+    top: 50%;
+    transform: translateY(-50%);
+    background: rgba(20, 20, 20, 0.9);
+    backdrop-filter: blur(10px);
+    padding: 20px;
+    border-radius: 15px;
+    border: 1px solid rgba(255,255,255,0.1);
+    z-index: 100;
+    color: white;
+    width: 160px;
+    box-shadow: 5px 5px 20px rgba(0,0,0,0.5);
+}
+
+.sidebar-header h3 {
+    margin: 0 0 20px 0;
+    font-size: 1rem;
+    text-align: center;
+    border-bottom: 1px solid rgba(255,255,255,0.1);
+    padding-bottom: 10px;
+    color: #fff;
+}
+
+.side-label {
+    font-size: 0.75rem;
+    color: #888;
+    text-transform: uppercase;
+    margin: 15px 0 5px 0;
+    font-weight: bold;
+}
+
+.side-group {
+    display: flex;
+    flex-direction: column;
+    gap: 8px;
+}
+
+#sideBar button {
+    background: rgba(255,255,255,0.05);
+    color: #ddd;
+    border: 1px solid transparent;
+    padding: 10px;
+    cursor: pointer;
+    border-radius: 8px;
+    transition: 0.2s;
+    text-align: left;
+    font-size: 0.9rem;
+}
+
+#sideBar button:hover {
+    background: rgba(255,255,255,0.15);
+    color: white;
+    border-color: rgba(255,255,255,0.2);
+}
+
+#sideBar .exit-btn {
+    margin-top: 10px;
+    background: rgba(192, 57, 43, 0.2);
+    color: #e74c3c;
+    border: 1px solid rgba(231, 76, 60, 0.3);
+    text-align: center;
+}
+
+#sideBar .exit-btn:hover {
+    background: #e74c3c;
+    color: white;
 }
