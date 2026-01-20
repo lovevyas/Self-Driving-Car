@@ -18,9 +18,9 @@ let currentMode = "BACKGROUND";
  // Points for passing cars
 let highScore = localStorage.getItem("bestScore") || 0;
 let startY = 100; // The starting Y position of the car
-let score = 0;
+let score =0;
 let currentScore = 0;
-let highDistance = 0;
+let highDistance = localStorage.getItem("bestDistance") || 0;
 const trafficBlueprint = [
     { lane: 1, y: -100 },
     { lane: 0, y: -300 },
@@ -183,7 +183,7 @@ function animate(time) {
 
     // --- 2. RIGHT PANEL: DISTANCE (Top Right) ---
     // Canvas Width - Box Width - Padding
-    drawPanel(carCanvas.width - 100, 20, 100, 75, "DISTANCE", currentScore + "m", "BEST", highDistance + "m", "right");
+    drawPanel(carCanvas.width - 100, 20, 100, 75, "DISTANCE", score + "m", "BEST", highDistance + "m", "right");
 
     networkCtx.lineDashOffset = -time / 50;
     Visualizer.drawNetwork(networkCtx, bestCar.brain);
@@ -215,6 +215,8 @@ function save() {
 
 function discard() {
     localStorage.removeItem("bestBrain");
+    localStorage.removeItem("bestDistance");
+    localStorage.removeItem("bestScore");
     alert("Brain discarded!");
 }
 

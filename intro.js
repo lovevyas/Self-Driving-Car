@@ -56,6 +56,6 @@ function restartGame() {
         controls.style.display = "flex";        
         init(currentMode);
         score = 0;
-        highDistance = 0;
+        
     }
 }
