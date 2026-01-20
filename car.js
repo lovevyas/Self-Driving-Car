@@ -23,7 +23,9 @@ class Car{
         this.controls=new Controls(controlType);
 
         this.img=new Image();
+        this.damagedImg=new Image();
         this.img.src="Car_image/car.png";
+        this.damagedImg.src="Car_image/damagedCar.png"
 
         this.mask=document.createElement("canvas");
         this.mask.width=width;
@@ -145,6 +147,9 @@ class Car{
     draw(ctx,drawSensor=false){
         if(this.sensor && drawSensor){
             this.sensor.draw(ctx);
+        }
+        if(this.damaged){
+            this.img=this.damagedImg;
         }
 
         ctx.save();
