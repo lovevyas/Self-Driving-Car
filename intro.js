@@ -52,6 +52,8 @@ function restartGame() {
     if (typeof init === "function" && typeof currentMode !== "undefined") {
         const popup = document.getElementById("restartPopup");
         if(popup) popup.style.display = "none";
+        const controls = document.getElementById("mobileControls");
+        controls.style.display = "flex"; 
         init(currentMode);
         score = 0;
     }
