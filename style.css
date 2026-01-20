@@ -240,12 +240,64 @@ body {
 }
 
 /* Show only on Mobile/Tablet */
-@media (max-width: 800px) {
-    #joystickZone {
-        display: block;
+/* --- CLEAN MOBILE LAYOUT --- */
+@media (max-width: 900px) {
+    
+    /* 1. HIDE THE BRAIN: It takes up too much space on phones */
+    #networkCanvas {
+        display: none !important;
     }
+
+    /* 2. CENTER THE CAR: Make the game the main focus */
+    body {
+        flex-direction: column;
+        justify-content: center;
+        align-items: center;
+        background: #333; /* Darker background for focus */
+    }
+
+    #carCanvas {
+        /* Ensure the road fits the screen height but keeps width */
+        height: 100vh; 
+        width: auto; 
+        max-width: 100%;
+        box-shadow: none;
+    }
+
+    /* 3. SHRINK THE SIDEBAR: Move it out of the way */
     #sideBar {
-        transform: scale(0.8);
+        position: fixed;
+        top: 10px;
+        left: 10px;
+        /* Remove the old centering transform */
+        transform: none; 
+        
+        /* Shrink it down significantly */
+        transform: scale(0.7);
         transform-origin: top left;
+        
+        /* Make it see-through so it doesn't block the road */
+        background: rgba(0, 0, 0, 0.4); 
+        backdrop-filter: blur(2px);
+        border: none;
+        box-shadow: none;
+        
+        /* Limit height so it doesn't cover the joystick */
+        max-height: 40vh;
+        overflow: hidden;
+    }
+
+    /* Hide the text headers in the sidebar to save space */
+    .sidebar-header, .side-label {
+        display: none;
+    }
+
+    /* 4. POSITION JOYSTICK CLEARLY */
+    #joystickZone {
+        display: block; /* Force show */
+        position: fixed;
+        bottom: 40px;
+        right: 40px;
+        z-index: 99; /* Always on top */
     }
 }
