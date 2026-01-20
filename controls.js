@@ -8,74 +8,42 @@ class Controls{
         switch(type){
             case "KEYS":
                 this.#addKeyboardListeners();
-                this.#addJoystickListeners();
+                this.#addTouchListeners();
                 break;
             case "DUMMY":
                 this.forward=true;
                 break;
         }
     }
-    #addJoystickListeners() {
-            const base = document.getElementById("joystickBase");
-            const knob = document.getElementById("joystickKnob");
-            
-            if (!base || !knob) return;
+    #addTouchListeners() {
+        // Helper to attach listeners
+        const setupButton = (id, direction) => {
+            const btn = document.getElementById(id);
+            if (!btn) return;
 
-            let startX = 0, startY = 0;
-            let moveX = 0, moveY = 0;
-            const maxDist = 35; // How far the knob can move
-
-            // Touch Start
-            base.addEventListener("touchstart", (e) => {
+            const startTurning = (e) => {
                 e.preventDefault();
-                const touch = e.changedTouches[0];
-                startX = touch.clientX;
-                startY = touch.clientY;
-            }, { passive: false });
-
-            // Touch Move
-            base.addEventListener("touchmove", (e) => {
-                e.preventDefault();
-                const touch = e.changedTouches[0];
-                
-                // Calculate distance moved
-                const deltaX = touch.clientX - startX;
-                const deltaY = touch.clientY - startY;
-                
-                // Calculate distance from center (Pythagoras)
-                const distance = Math.min(Math.hypot(deltaX, deltaY), maxDist);
-                const angle = Math.atan2(deltaY, deltaX);
-
-                // Move the knob visually
-                moveX = Math.cos(angle) * distance;
-                moveY = Math.sin(angle) * distance;
-                knob.style.transform = `translate(calc(-50% + ${moveX}px), calc(-50% + ${moveY}px))`;
-
-                // --- CONVERT ANGLE TO CAR CONTROLS ---
-                this.forward = moveY < -10; // Dragged Up
-                this.reverse = moveY > 10;  // Dragged Down
-                this.left = moveX < -10;    // Dragged Left
-                this.right = moveX > 10;    // Dragged Right
-
-            }, { passive: false });
-
-            // Touch End (Reset)
-            const resetJoystick = (e) => {
-                e.preventDefault();
-                moveX = 0;
-                moveY = 0;
-                knob.style.transform = `translate(-50%, -50%)`; // Reset to center
-                
-                // Stop Car
-                this.forward = false;
-                this.reverse = false;
-                this.left = false;
-                this.right = false;
+                this[direction] = true;
+                this.forward = true; // Auto-Gas on touch
             };
 
-            base.addEventListener("touchend", resetJoystick);
-            base.addEventListener("touchcancel", resetJoystick);
-    }
+            const stopTurning = (e) => {
+                e.preventDefault();
+                this[direction] = false;
+                this.forward = true; // Keep Auto-Gas on release
+            };
+
+            btn.addEventListener("touchstart", startTurning, { passive: false });
+            btn.addEventListener("touchend", stopTurning, { passive: false });
+            
+            // Mouse support for testing on PC
+            btn.addEventListener("mousedown", startTurning);
+            btn.addEventListener("mouseup", stopTurning);
+        };
+
+        setupButton("btnLeft", "left");
+        setupButton("btnRight", "right");
+    }    
 
     #addKeyboardListeners(){
         document.onkeydown=(event)=>{

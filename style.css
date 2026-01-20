@@ -207,38 +207,7 @@ body {
     color: white;
 }
 
-/* --- VIRTUAL JOYSTICK --- */
-#joystickZone {
-    display: none; /* Hidden on PC */
-    position: fixed;
-    bottom: 30px;
-    right: 30px;
-    z-index: 9999;
-}
-
-#joystickBase {
-    width: 120px;
-    height: 120px;
-    background: rgba(255, 255, 255, 0.1);
-    border: 2px solid rgba(255, 255, 255, 0.3);
-    border-radius: 50%;
-    position: relative;
-    backdrop-filter: blur(5px);
-}
-
-#joystickKnob {
-    width: 50px;
-    height: 50px;
-    background: rgba(255, 255, 255, 0.8);
-    border-radius: 50%;
-    position: absolute;
-    top: 50%;
-    left: 50%;
-    transform: translate(-50%, -50%); /* Start in center */
-    box-shadow: 0 0 10px rgba(0,0,0,0.5);
-    pointer-events: none; /* Let touches pass through to the base */
-}
-
+/
 /* Show only on Mobile/Tablet */
 /* --- CLEAN MOBILE LAYOUT --- */
 @media (max-width: 900px) {
@@ -293,11 +262,46 @@ body {
     }
 
     /* 4. POSITION JOYSTICK CLEARLY */
-    #joystickZone {
-        display: block; /* Force show */
-        position: fixed;
-        bottom: 40px;
-        right: 40px;
-        z-index: 99; /* Always on top */
-    }
+   
+}
+/* --- SIMPLE MOBILE CONTROLS --- */
+#mobileControls {
+    display: none; /* Hidden on PC */
+    position: fixed;
+    bottom: 20px;
+    left: 0;
+    width: 100%;
+    height: 120px;
+    justify-content: space-between; /* Push buttons to edges */
+    padding: 0 40px; /* Space from sides */
+    box-sizing: border-box;
+    z-index: 99;
+    pointer-events: none; /* Let touches pass through the gap between buttons */
+}
+
+#mobileControls button {
+    width: 100px;
+    height: 100px;
+    background: rgba(255, 255, 255, 0.2); /* Semi-transparent */
+    border: 2px solid rgba(255, 255, 255, 0.5);
+    border-radius: 50%; /* Circle shape */
+    font-size: 40px;
+    color: white;
+    cursor: pointer;
+    backdrop-filter: blur(5px);
+    pointer-events: auto; /* Re-enable clicks for buttons */
+    touch-action: manipulation;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+}
+
+#mobileControls button:active {
+    background: rgba(255, 255, 255, 0.6);
+    transform: scale(0.95);
+}
+
+/* Show only on Mobile */
+@media (max-width: 900px) {
+    #mobileControls { display: flex; }
 }

@@ -15,7 +15,10 @@ let bestCar;
 let traffic = [];
 let gameStarted = false;
 let currentMode = "BACKGROUND";
-
+let score = 0; // Points for passing cars
+let highScore = localStorage.getItem("bestScore") || 0;
+let startY = 100; // The starting Y position of the car
+let currentScore =0 
 const trafficBlueprint = [
     { lane: 1, y: -100 },
     { lane: 0, y: -300 },
@@ -37,12 +40,13 @@ function init(mode = "BACKGROUND") {
         cars = [new Car(road.getLaneCenter(1), 100, 30, 50, "AI", 3)];
         bestCar = cars[0];
         bestCar.brain = defaultBrain;
-    
+        
         return; // Stop here
     }
     if (mode === "KEYS") {
         cars = [new Car(road.getLaneCenter(1), 100, 30, 50, "KEYS", 3)];
         bestCar = cars[0];
+        
     }
 
     if (mode === "AUTO") {
@@ -116,6 +120,7 @@ function animate(time) {
     }
     
     if (gameStarted) {
+        
         carCtx.globalAlpha = 0.2;
         for (let i = 0; i < cars.length; i++) {
             cars[i].draw(carCtx);
@@ -123,9 +128,69 @@ function animate(time) {
         carCtx.globalAlpha = 1;
         bestCar.draw(carCtx, true);
     }
-
+    
     carCtx.restore();
 
+    if (gameStarted) {
+        currentScore = Math.floor(Math.max(0, startY - bestCar.y) / 30);
+        // 1. Calculate Cars Passed (+5 points)
+        // We check every traffic car. If we passed it (and haven't counted it yet), add points.
+        for (let i = 0; i < traffic.length; i++) {
+            const t = traffic[i];
+            // If bestCar is "above" traffic (smaller Y) AND we haven't marked it yet
+            if (bestCar.y < t.y && !t.passed) {
+                score += 5;
+                t.passed = true; // Mark as passed so we don't count it twice
+            }
+        }
+    }
+    if (score > highScore) {
+            highScore = score;
+            localStorage.setItem("bestScore", highScore);
+        }
+    
+    // Update High Score if beaten
+    if (currentScore > highScore) {
+        highScore = currentScore;
+        localStorage.setItem("bestScore", highScore);
+    }
+
+    // Draw Background Box for Scores (Optional, makes it readable)
+    carCtx.fillStyle = "rgba(0, 0, 0, 0.5)";
+    carCtx.fillRect(carCanvas.width - 160, 10, 150, 70);
+
+    // Text Settings
+    carCtx.fillStyle = "white";
+    carCtx.textAlign = "right";
+    carCtx.font = "bold 16px Arial";
+
+    // Draw Labels
+    carCtx.fillStyle = "#aaa"; // Grey for labels
+    carCtx.fillText("BEST", carCanvas.width - 20, 35);
+    carCtx.fillText("CURRENT", carCanvas.width - 20, 65);
+
+    // Draw Numbers
+    carCtx.fillStyle = "white"; // White for numbers
+    carCtx.font = "bold 20px Arial";
+    carCtx.fillText(highScore + " m", carCanvas.width - 70, 35);
+    carCtx.fillText(currentScore + " m", carCanvas.width - 95, 65);
+    // ----------------------
+    carCtx.textAlign = "left";
+    carCtx.fillStyle = "rgba(0,0,0,0.5)"; // Semi-transparent background
+    // Box position: x=10, y=Height-80, width=150, height=70
+    carCtx.fillRect(10, carCanvas.height - 80, 160, 70);
+
+    carCtx.fillStyle = "#aaa"; // Grey Label
+    carCtx.font = "bold 14px Arial";
+    carCtx.fillText("SCORE", 20, carCanvas.height - 55);
+    carCtx.fillText("BEST", 20, carCanvas.height - 25);
+
+    carCtx.fillStyle = "white"; // White Numbers
+    carCtx.font = "bold 20px Arial";
+    carCtx.fillText(score, 80, carCanvas.height - 55);
+    carCtx.fillText(highScore, 80, carCanvas.height - 25);
+
+    carCtx.shadowBlur = 0; // Reset shadow
     networkCtx.lineDashOffset = -time / 50;
     Visualizer.drawNetwork(networkCtx, bestCar.brain);
     
