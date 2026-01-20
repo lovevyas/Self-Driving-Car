@@ -1,205 +1,187 @@
-/* --- GLOBAL RESET --- */
+/* ========================================= */
+/* 1. GLOBAL RESET & BASE STYLES             */
+/* ========================================= */
+* {
+    box-sizing: border-box; /* Crucial: padding won't break width */
+    -webkit-tap-highlight-color: transparent; /* Removes blue tap highlight on mobile */
+}
+
 body {
     margin: 0;
-    background: #111; /* Dark background behind canvases */
-    overflow: hidden;
+    background: #111; /* Dark background */
+    overflow: hidden; /* No scrollbars on the main page */
     display: flex;
     justify-content: center;
     align-items: center;
     font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+    height: 100vh; /* Full screen height */
+    width: 100vw;
 }
 
-/* --- CANVAS STYLES --- */
+/* ========================================= */
+/* 2. CANVAS STYLES                          */
+/* ========================================= */
 #carCanvas {
-    width: 200px;
-    background: #f0f0f0; /* Light gray road */
+    width: 200px; /* Default Desktop Width */
+    background: #f0f0f0;
     box-shadow: 0 0 20px rgba(0,0,0,0.5);
+    /* Smooth rendering */
+    image-rendering: pixelated; 
 }
 
 #networkCanvas {
     width: 300px;
-    background: #0d0d0d; /* Deep black for network */
+    background: #0d0d0d;
     border-left: 2px solid #333;
 }
 
-/* --- INTRO SCREEN (Matches id="introScreen") --- */
+/* ========================================= */
+/* 3. INTRO SCREEN                           */
+/* ========================================= */
 #introScreen {
     position: fixed;
     top: 0;
     left: 0;
     width: 100%;
     height: 100%;
-    /* Gradient overlay */
-    background: radial-gradient(circle, rgba(0,0,0,0.4) 0%, rgba(0,0,0,0.9) 100%);
-    
-    /* Important: We use Flexbox to center the card */
+    background: radial-gradient(circle, rgba(0,0,0,0.4) 0%, rgba(0,0,0,0.95) 100%);
     display: flex; 
     justify-content: center;
     align-items: center;
-    
-    z-index: 100;
+    z-index: 999; /* Highest priority */
     transition: opacity 0.5s ease;
 }
 
 .intro-card {
-    background: rgba(20, 20, 20, 0.6); 
-    backdrop-filter: blur(15px);        /* Glass Effect */
+    background: rgba(20, 20, 20, 0.7); 
+    backdrop-filter: blur(15px);
     -webkit-backdrop-filter: blur(15px);
     border: 1px solid rgba(255, 255, 255, 0.1);
     border-radius: 20px;
-    padding: 50px;
+    padding: 40px;
     text-align: center;
     box-shadow: 0 20px 50px rgba(0,0,0,0.5);
-    max-width: 600px;
+    max-width: 500px;
     width: 90%;
 }
 
 .intro-card h1 {
     color: white;
-    font-size: 3rem;
-    margin: 0;
+    font-size: 2.5rem;
+    margin: 0 0 10px 0;
     text-transform: uppercase;
     letter-spacing: 2px;
-    text-shadow: 0 0 10px rgba(0, 198, 255, 0.7);
+    text-shadow: 0 0 15px rgba(0, 198, 255, 0.6);
 }
 
 .subtitle {
-    color: #aaa;
-    margin-top: 10px;
-    font-size: 1.1rem;
+    color: #bbb;
+    margin-bottom: 20px;
+    font-size: 1rem;
 }
 
-.divider {
-    height: 1px;
-    background: linear-gradient(90deg, transparent, rgba(255,255,255,0.2), transparent);
-    margin: 30px 0;
-}
-
-.intro-card h3 {
-    color: #fff;
-    margin-bottom: 25px;
-    font-weight: 400;
-    text-transform: uppercase;
-    font-size: 0.9rem;
-    letter-spacing: 1px;
-}
-
-/* --- INTRO BUTTONS --- */
 .button-row {
     display: flex;
     justify-content: center;
-    gap: 20px;
+    gap: 15px;
     flex-wrap: wrap;
+    margin-top: 30px;
 }
 
 .mode-btn {
-    background: rgba(255, 255, 255, 0.05);
-    border: 1px solid rgba(255, 255, 255, 0.1);
+    background: rgba(255, 255, 255, 0.08);
+    border: 1px solid rgba(255, 255, 255, 0.15);
     color: white;
-    padding: 15px 25px;
-    border-radius: 12px;
+    padding: 12px 20px;
+    border-radius: 10px;
     cursor: pointer;
-    transition: all 0.3s ease;
+    transition: all 0.2s ease;
     display: flex;
     align-items: center;
-    gap: 10px;
-    min-width: 140px;
-}
-
-.mode-btn .icon {
-    font-size: 1.5rem;
-}
-
-.mode-btn .text {
-    font-size: 1rem;
-    font-weight: bold;
+    gap: 8px;
+    min-width: 130px;
+    justify-content: center;
 }
 
 .mode-btn:hover {
-    transform: translateY(-5px);
-    border-color: rgba(255,255,255,0.5);
+    transform: translateY(-3px);
+    background: rgba(255, 255, 255, 0.2);
+    border-color: white;
 }
 
-.mode-btn.manual:hover {
-    background: linear-gradient(45deg, #2980b9, #3498db);
-    box-shadow: 0 0 20px rgba(52, 152, 219, 0.6);
-}
-
-.mode-btn.auto:hover {
-    background: linear-gradient(45deg, #8e44ad, #9b59b6);
-    box-shadow: 0 0 20px rgba(155, 89, 182, 0.6);
-}
-
-.mode-btn.trainer:hover {
-    background: linear-gradient(45deg, #d35400, #e67e22);
-    box-shadow: 0 0 20px rgba(230, 126, 34, 0.6);
-}
-
-/* --- SIDEBAR (Matches id="sideBar") --- */
+/* ========================================= */
+/* 4. SIDEBAR (Control Panel)                */
+/* ========================================= */
 #sideBar {
-    display: none; /* Hidden by default, JS turns it to 'block' */
+    display: none; /* Hidden by default */
     position: fixed;
     left: 20px; 
     top: 50%;
     transform: translateY(-50%);
-    background: rgba(20, 20, 20, 0.9);
+    
+    background: rgba(15, 15, 15, 0.95);
     backdrop-filter: blur(10px);
+    -webkit-backdrop-filter: blur(10px);
+    
     padding: 20px;
-    border-radius: 15px;
+    border-radius: 12px;
     border: 1px solid rgba(255,255,255,0.1);
-    z-index: 100;
+    z-index: 500;
     color: white;
-    width: 160px;
-    box-shadow: 5px 5px 20px rgba(0,0,0,0.5);
+    width: 170px;
+    box-shadow: 10px 10px 30px rgba(0,0,0,0.6);
+    
+    /* Flex layout to handle "Exit" button positioning */
+    flex-direction: column;
+    gap: 10px;
 }
 
 .sidebar-header h3 {
-    margin: 0 0 20px 0;
+    margin: 0 0 15px 0;
     font-size: 1rem;
     text-align: center;
     border-bottom: 1px solid rgba(255,255,255,0.1);
     padding-bottom: 10px;
-    color: #fff;
+    color: #eee;
+    letter-spacing: 1px;
 }
 
 .side-label {
-    font-size: 0.75rem;
+    font-size: 0.7rem;
     color: #888;
     text-transform: uppercase;
-    margin: 15px 0 5px 0;
+    margin: 10px 0 5px 0;
     font-weight: bold;
-}
-
-.side-group {
-    display: flex;
-    flex-direction: column;
-    gap: 8px;
+    letter-spacing: 0.5px;
 }
 
 #sideBar button {
-    background: rgba(255,255,255,0.05);
+    width: 100%;
+    background: rgba(255,255,255,0.08);
     color: #ddd;
     border: 1px solid transparent;
     padding: 10px;
     cursor: pointer;
-    border-radius: 8px;
+    border-radius: 6px;
     transition: 0.2s;
     text-align: left;
     font-size: 0.9rem;
+    margin-bottom: 5px;
 }
 
 #sideBar button:hover {
-    background: rgba(255,255,255,0.15);
+    background: rgba(255,255,255,0.2);
     color: white;
-    border-color: rgba(255,255,255,0.2);
 }
 
+/* The Exit Button */
 #sideBar .exit-btn {
-    margin-top: 10px;
-    background: rgba(192, 57, 43, 0.2);
+    margin-top: 15px; /* Separate from others */
+    background: rgba(231, 76, 60, 0.15);
     color: #e74c3c;
     border: 1px solid rgba(231, 76, 60, 0.3);
     text-align: center;
+    font-weight: bold;
 }
 
 #sideBar .exit-btn:hover {
@@ -207,101 +189,147 @@ body {
     color: white;
 }
 
+/* ========================================= */
+/* 5. MOBILE & TABLET OPTIMIZATIONS          */
+/* ========================================= */
 
-/* Show only on Mobile/Tablet */
-/* --- CLEAN MOBILE LAYOUT --- */
-@media (max-width: 900px) {
-    
-    /* 1. HIDE THE BRAIN: It takes up too much space on phones */
-    #networkCanvas {
-        display: none !important;
-    }
-
-    /* 2. CENTER THE CAR: Make the game the main focus */
-    body {
-        flex-direction: column;
-        justify-content: center;
-        align-items: center;
-        background: #333; /* Darker background for focus */
-    }
-
-    #carCanvas {
-        /* Ensure the road fits the screen height but keeps width */
-        height: 100vh; 
-        width: auto; 
-        max-width: 100%;
-        box-shadow: none;
-    }
-
-    /* 3. SHRINK THE SIDEBAR: Move it out of the way */
-    #sideBar {
-        position: fixed;
-        top: 10px;
-        left: 10px;
-        /* Remove the old centering transform */
-        transform: none; 
-        
-        /* Shrink it down significantly */
-        transform: scale(0.7);
-        transform-origin: top left;
-        
-        /* Make it see-through so it doesn't block the road */
-        background: rgba(0, 0, 0, 0.4); 
-        backdrop-filter: blur(2px);
-        border: none;
-        box-shadow: none;
-        
-        /* Limit height so it doesn't cover the joystick */
-        max-height: 40vh;
-        overflow: hidden;
-    }
-
-    /* Hide the text headers in the sidebar to save space */
-    .sidebar-header, .side-label {
-        display: none;
-    }
-
-    /* 4. POSITION JOYSTICK CLEARLY */
-   
-}
-/* --- SIMPLE MOBILE CONTROLS --- */
-#mobileControls {
-    display: none; /* Hidden on PC */
+/* Gear Icon (Settings) */
+#settingsBtn {
+    display: none;
     position: fixed;
-    bottom: 20px;
-    left: 0;
-    width: 100%;
-    height: 120px;
-    justify-content: space-between; /* Push buttons to edges */
-    padding: 0 40px; /* Space from sides */
-    box-sizing: border-box;
-    z-index: 99;
-    pointer-events: none; /* Let touches pass through the gap between buttons */
-}
-
-#mobileControls button {
-    width: 100px;
-    height: 100px;
-    background: rgba(255, 255, 255, 0.2); /* Semi-transparent */
-    border: 2px solid rgba(255, 255, 255, 0.5);
-    border-radius: 50%; /* Circle shape */
-    font-size: 40px;
+    top: 20px;
+    left: 20px;
+    z-index: 400;
+    background: rgba(0, 0, 0, 0.6);
+    border: 1px solid rgba(255, 255, 255, 0.3);
     color: white;
+    font-size: 24px;
+    width: 50px;
+    height: 50px;
+    border-radius: 10px;
     cursor: pointer;
-    backdrop-filter: blur(5px);
-    pointer-events: auto; /* Re-enable clicks for buttons */
-    touch-action: manipulation;
-    display: flex;
+    backdrop-filter: blur(4px);
     justify-content: center;
     align-items: center;
 }
 
-#mobileControls button:active {
-    background: rgba(255, 255, 255, 0.6);
-    transform: scale(0.95);
+/* Crash Popup */
+#restartPopup {
+    display: none;
+    position: fixed;
+    top: 50%;
+    left: 50%;
+    transform: translate(-50%, -50%);
+    background: rgba(30, 5, 5, 0.95);
+    padding: 30px;
+    border-radius: 15px;
+    border: 2px solid #e74c3c;
+    text-align: center;
+    z-index: 600;
+    box-shadow: 0 0 40px rgba(231, 76, 60, 0.5);
+    width: 260px;
 }
 
-/* Show only on Mobile */
+#restartPopup h2 {
+    color: white;
+    margin: 0 0 20px 0;
+    font-family: 'Segoe UI', sans-serif;
+    font-size: 24px;
+}
+
+#restartPopup button {
+    background: #e74c3c;
+    color: white;
+    border: none;
+    padding: 12px;
+    font-size: 16px;
+    border-radius: 8px;
+    cursor: pointer;
+    font-weight: bold;
+    width: 100%;
+}
+
+/* --- MOBILE SPECIFIC MEDIA QUERY --- */
 @media (max-width: 900px) {
-    #mobileControls { display: flex; }
+
+    /* 1. Reset Body Layout */
+    body {
+        flex-direction: column;
+        background: #222;
+    }
+
+    /* 2. Hide Network & Show Settings */
+    #networkCanvas { display: none !important; }
+    #settingsBtn { display: flex; }
+
+    /* 3. FIX THE STRETCHING: Don't use width: 100% */
+    #carCanvas {
+        height: 100vh; /* Fill vertical height */
+        width: auto;   /* Keep aspect ratio! */
+        max-width: 100%;
+        box-shadow: none; /* remove shadow on mobile for performance */
+    }
+
+    /* 4. FIX THE SIDEBAR: Position & Scrolling */
+    #sideBar {
+        display: none !important; /* Force hide initially */
+        position: fixed;
+        top: 80px; /* Clear the gear icon */
+        left: 20px;
+        transform: none; /* Reset desktop transform */
+        
+        width: 200px;
+        max-height: calc(100vh - 100px); /* Never go off-screen */
+        overflow-y: auto; /* ENABLE SCROLLING if content is too tall */
+        
+        background: rgba(10, 10, 10, 0.95);
+        border: 1px solid #444;
+    }
+
+    #sideBar.active {
+        display: flex !important; /* Use Flex to keep internal layout */
+        animation: slideIn 0.2s ease-out;
+    }
+
+    /* 5. FIX BUTTONS: Better Size & Position */
+    #mobileControls {
+        display: flex;
+        position: fixed;
+        bottom: 30px;
+        left: 0;
+        width: 100%;
+        justify-content: space-between;
+        padding: 0 40px;
+        z-index: 300;
+        pointer-events: none; 
+    }
+
+    #mobileControls button {
+        width: 80px;
+        height: 80px;
+        font-size: 35px;
+        
+        background: rgba(255, 255, 255, 0.1);
+        border: 2px solid rgba(255, 255, 255, 0.3);
+        border-radius: 50%;
+        color: white;
+        
+        pointer-events: auto; 
+        backdrop-filter: blur(5px);
+        display: flex;
+        justify-content: center;
+        align-items: center;
+        transition: transform 0.1s;
+    }
+    
+    #mobileControls button:active {
+        background: rgba(255, 255, 255, 0.3);
+        transform: scale(0.95);
+    }
+}
+
+/* Animations */
+@keyframes slideIn {
+    from { opacity: 0; transform: translateX(-10px); }
+    to { opacity: 1; transform: translateX(0); }
 }

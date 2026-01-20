@@ -1,3 +1,4 @@
+let score = 0;
 function startGame(mode) {
     const intro = document.getElementById("introScreen");
     const sideBar = document.getElementById("sideBar");
@@ -49,6 +50,9 @@ function exitGame() {
 function restartGame() {
     // Just re-run the init function with the stored mode
     if (typeof init === "function" && typeof currentMode !== "undefined") {
+        const popup = document.getElementById("restartPopup");
+        if(popup) popup.style.display = "none";
         init(currentMode);
+        score = 0;
     }
 }

@@ -35,7 +35,7 @@
             </div>
         </div>
     </div>
-
+    <button id="settingsBtn" onclick="toggleOptions()">⚙️</button>
     <div id="sideBar">
         <div class="sidebar-header">
             <h3>Control Panel</h3>
@@ -58,6 +58,10 @@
             <button onclick="restartGame()">🔄 Restart</button>
             <button onclick="exitGame()" class="exit-btn">❌ Exit</button>
         </div>
+    </div>
+    <div id="restartPopup">
+    <h2>💥 CRASHED!</h2>
+    <button onclick="restartGame()">🔄 Try Again</button>
     </div>
     <div id="mobileControls">
     <button id="btnLeft">⬅️</button>
