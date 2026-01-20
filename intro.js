@@ -1,4 +1,4 @@
-let score = 0;
+
 function startGame(mode) {
     const intro = document.getElementById("introScreen");
     const sideBar = document.getElementById("sideBar");
@@ -53,8 +53,9 @@ function restartGame() {
         const popup = document.getElementById("restartPopup");
         if(popup) popup.style.display = "none";
         const controls = document.getElementById("mobileControls");
-        controls.style.display = "flex"; 
+        controls.style.display = "flex";        
         init(currentMode);
         score = 0;
+        highDistance = 0;
     }
 }

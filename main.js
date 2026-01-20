@@ -18,7 +18,9 @@ let currentMode = "BACKGROUND";
  // Points for passing cars
 let highScore = localStorage.getItem("bestScore") || 0;
 let startY = 100; // The starting Y position of the car
-let currentScore =0 
+let score = 0;
+let currentScore = 0;
+let highDistance = 0;
 const trafficBlueprint = [
     { lane: 1, y: -100 },
     { lane: 0, y: -300 },
@@ -138,17 +140,29 @@ function animate(time) {
     carCtx.restore();
 
     if (gameStarted) {
-        
+        // 1. DISTANCE LOGIC
         currentScore = Math.floor(Math.max(0, startY - bestCar.y) / 30);
-        // 1. Calculate Cars Passed (+5 points)
-        // We check every traffic car. If we passed it (and haven't counted it yet), add points.
+        
+        // Check High Distance
+        if (currentScore > highDistance) {
+            highDistance = currentScore;
+            localStorage.setItem("bestDistance", highDistance);
+        }
+
+        // 2. POINTS LOGIC (Passing Cars)
         for (let i = 0; i < traffic.length; i++) {
             const t = traffic[i];
-            // If bestCar is "above" traffic (smaller Y) AND we haven't marked it yet
             if (bestCar.y < t.y && !t.passed) {
                 score += 5;
-                t.passed = true; // Mark as passed so we don't count it twice
+                t.passed = true;
             }
+        }
+
+        // Check High Score (Points)
+        // Note: 'highScore' variable must be defined in your global scope or init
+        if (score > highScore) {
+            highScore = score;
+            localStorage.setItem("bestScore", highScore);
         }
     }
     if (score > highScore) {
@@ -161,43 +175,16 @@ function animate(time) {
         highScore = currentScore;
         localStorage.setItem("bestScore", highScore);
     }
+    carCtx.shadowColor = "black";
+    carCtx.shadowBlur = 0;
+    // --- 1. LEFT PANEL: POINTS (Next to Gear Icon) ---
+    // Assuming Gear is at x=15, width~50. We start at x=80.
+    drawPanel(0, 20, 100, 75, "POINTS", score, "BEST", highScore, "left");
 
-    // Draw Background Box for Scores (Optional, makes it readable)
-    carCtx.fillStyle = "rgba(0, 0, 0, 0.5)";
-    carCtx.fillRect(carCanvas.width - 170, 10, 160, 70);
+    // --- 2. RIGHT PANEL: DISTANCE (Top Right) ---
+    // Canvas Width - Box Width - Padding
+    drawPanel(carCanvas.width - 100, 20, 100, 75, "DISTANCE", currentScore + "m", "BEST", highDistance + "m", "right");
 
-    // Text Settings
-    carCtx.fillStyle = "white";
-    carCtx.textAlign = "right";
-    carCtx.font = "bold 16px Arial";
-
-    // Draw Labels
-    carCtx.fillStyle = "#aaa"; // Grey for labels
-    carCtx.fillText("BEST", carCanvas.width - 20, 35);
-    carCtx.fillText("CURRENT", carCanvas.width - 20, 65);
-
-    // Draw Numbers
-    carCtx.fillStyle = "white"; // White for numbers
-    carCtx.font = "bold 20px Arial";
-    carCtx.fillText(highScore + " m", carCanvas.width - 70, 35);
-    carCtx.fillText(currentScore + " m", carCanvas.width - 105, 65);
-    // ----------------------
-    carCtx.textAlign = "left";
-    carCtx.fillStyle = "rgba(0,0,0,0.5)"; // Semi-transparent background
-    // Box position: x=10, y=Height-80, width=150, height=70
-    carCtx.fillRect(10, carCanvas.height - 90, 160, 70);
-
-    carCtx.fillStyle = "#0a0808"; // Grey Label
-    carCtx.font = "bold 14px Arial";
-    carCtx.fillText("SCORE", 20, carCanvas.height - 65);
-    carCtx.fillText("BEST", 20, carCanvas.height - 35);
-
-    carCtx.fillStyle = "white"; // White Numbers
-    carCtx.font = "bold 20px Arial";
-    carCtx.fillText(score, 80, carCanvas.height - 65);
-    carCtx.fillText(highScore, 80, carCanvas.height - 35);
-
-    carCtx.shadowBlur = 0; // Reset shadow
     networkCtx.lineDashOffset = -time / 50;
     Visualizer.drawNetwork(networkCtx, bestCar.brain);
     
@@ -243,3 +230,41 @@ function toggleOptions() {
     const sidebar = document.getElementById("sideBar");
     sidebar.classList.toggle("active");
 }
+function drawPanel(x, y, width, height, title, value, subLabel, subValue, align) {
+        carCtx.save();
+        
+        // Background Box
+        carCtx.fillStyle = "rgba(10, 10, 10, 0.7)"; // Darker, more premium
+        carCtx.beginPath();
+        if (carCtx.roundRect) {
+            carCtx.roundRect(x, y, width, height, 10);
+        } else {
+            carCtx.rect(x, y, width, height); // Fallback for old browsers
+        }
+        carCtx.fill();
+        
+        // Border (Subtle)
+        carCtx.lineWidth = 1;
+        carCtx.strokeStyle = "rgba(255, 255, 255, 0.15)";
+        carCtx.stroke();
+
+        carCtx.textAlign = align;
+        const textX = align === "left" ? x + 15 : x + width - 15;
+
+        // Title (Small Grey)
+        carCtx.fillStyle = "#aaa"; 
+        carCtx.font = "bold 10px 'Segoe UI', Arial";
+        carCtx.fillText(title, textX, y + 20);
+
+        // Main Value (Big White)
+        carCtx.fillStyle = "#fff"; 
+        carCtx.font = "bold 22px 'Segoe UI', Arial";
+        carCtx.fillText(value, textX, y + 45);
+
+        // Sub Value (Colored Accent)
+        carCtx.fillStyle = title.includes("DIST") ? "#3498db" : "#e74c3c"; // Blue for Dist, Red for Pts
+        carCtx.font = "bold 10px 'Segoe UI', Arial";
+        carCtx.fillText(subLabel + ": " + subValue, textX, y + 62);
+
+        carCtx.restore();
+    }
