@@ -11,11 +11,13 @@ body {
 
 /* --- CANVAS STYLES --- */
 #carCanvas {
+    width: 200px;
     background: #f0f0f0; /* Light gray road */
     box-shadow: 0 0 20px rgba(0,0,0,0.5);
 }
 
 #networkCanvas {
+    width: 300px;
     background: #0d0d0d; /* Deep black for network */
     border-left: 2px solid #333;
 }

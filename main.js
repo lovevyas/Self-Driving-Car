@@ -71,7 +71,7 @@ function init(mode = "BACKGROUND") {
             }
         } else if (typeof defaultBrain !== "undefined") {
             for (let i = 0; i < cars.length; i++) {
-                cars[i].brain = defaultBrain;
+                cars[i].brain = JSON.parse(JSON.stringify(defaultBrain));
                 if (i != 0) {
                     NeuralNetwork.mutate(cars[i].brain, 0.1);
                 }
