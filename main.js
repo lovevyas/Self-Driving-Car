@@ -19,7 +19,7 @@ let currentMode = "BACKGROUND";
 let highScore = localStorage.getItem("bestScore") || 0;
 let startY = 100; // The starting Y position of the car
 let score =0;
-let currentScore = 0;
+let currentDistance = 0;
 let highDistance = localStorage.getItem("bestDistance") || 0;
 const trafficBlueprint = [
     { lane: 1, y: -100 },
@@ -141,11 +141,11 @@ function animate(time) {
 
     if (gameStarted) {
         // 1. DISTANCE LOGIC
-        currentScore = Math.floor(Math.max(0, startY - bestCar.y) / 30);
+        currentDistance = Math.floor(Math.max(0, startY - bestCar.y) / 30);
         
         // Check High Distance
-        if (currentScore > highDistance) {
-            highDistance = currentScore;
+        if (currentDistance > highDistance) {
+            highDistance = currentDistance;
             localStorage.setItem("bestDistance", highDistance);
         }
 
@@ -158,23 +158,16 @@ function animate(time) {
             }
         }
 
-        // Check High Score (Points)
-        // Note: 'highScore' variable must be defined in your global scope or init
+        
         if (score > highScore) {
             highScore = score;
             localStorage.setItem("bestScore", highScore);
         }
     }
-    if (score > highScore) {
-            highScore = score;
-            localStorage.setItem("bestScore", highScore);
-        }
+    
     
     // Update High Score if beaten
-    if (currentScore > highScore) {
-        highScore = currentScore;
-        localStorage.setItem("bestScore", highScore);
-    }
+    
     carCtx.shadowColor = "black";
     carCtx.shadowBlur = 0;
     // --- 1. LEFT PANEL: POINTS (Next to Gear Icon) ---
@@ -183,7 +176,7 @@ function animate(time) {
 
     // --- 2. RIGHT PANEL: DISTANCE (Top Right) ---
     // Canvas Width - Box Width - Padding
-    drawPanel(carCanvas.width - 100, 20, 100, 75, "DISTANCE", score + "m", "BEST", highDistance + "m", "right");
+    drawPanel(carCanvas.width - 100, 20, 100, 75, "DISTANCE", currentDistance + "m", "BEST", highDistance + "m", "right");
 
     networkCtx.lineDashOffset = -time / 50;
     Visualizer.drawNetwork(networkCtx, bestCar.brain);
@@ -217,6 +210,8 @@ function discard() {
     localStorage.removeItem("bestBrain");
     localStorage.removeItem("bestDistance");
     localStorage.removeItem("bestScore");
+    highDistance=0;
+    highScore =0;
     alert("Brain discarded!");
 }
 
